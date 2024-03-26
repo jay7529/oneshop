@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"oneshop/internal/model"
 	"oneshop/utils"
 
@@ -35,7 +34,6 @@ func User_Get_Shop_List(c *gin.Context) {
 }
 
 func User_Get_Shop_Image(c *gin.Context) {
-	path := "./uploads/shop/" + c.Param("shopID") + "/" + c.Param("imageID")
-	fmt.Println(path)
-	c.File(path)
+	path := "./uploads/shop/" + c.Param("shopId") + "/" + c.Param("imageId")
+	utils.HandlerImage(c, path)
 }

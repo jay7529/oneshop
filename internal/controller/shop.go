@@ -1,10 +1,10 @@
 package controller
 
 import (
+	"oneshop/database"
 	"oneshop/internal/model"
 	"oneshop/internal/verify"
 	"oneshop/middleware"
-	"oneshop/tools"
 	"oneshop/utils"
 
 	"time"
@@ -27,8 +27,8 @@ func Shop_Login(c *gin.Context) {
 	}
 
 	//取得token
-	token, _ := middleware.GenerateToken("shop", row[0].Shop_id)
-	tools.SetHkey("shop", utils.IntToString(row[0].Shop_id), token)
+	token, _ := middleware.GenerateToken("shop", row[0].ShopId)
+	database.SetHkey("shop", utils.IntToString(row[0].ShopId), token)
 
 	// 新增登入記錄
 	// model.Insert_login_log([]interface{}{row[0]["user_id"], c.PostForm("account"), c.ClientIP()})
@@ -43,7 +43,7 @@ func Shop_Logout(c *gin.Context) {
 		return
 	}
 
-	tools.DelHkey("shop", utils.IntToString(shop_id))
+	database.DelHkey("shop", utils.IntToString(shop_id))
 
 	// 新增登出記錄
 	// model.Insert_login_log([]interface{}{row[0]["user_id"], c.PostForm("account"), c.ClientIP()})
@@ -61,7 +61,6 @@ func Get_Shop_Detail(c *gin.Context) {
 	row := model.Get_Shop_Detail([]interface{}{shop_id})
 
 	newToken, _ := middleware.GenerateToken("shop", shop_id)
-	tools.SetHkey("shop", utils.IntToString(shop_id), newToken)
 	utils.Success(c, map[string]interface{}{"token": newToken, "shop_detail": row}, "Success")
 }
 
@@ -82,7 +81,6 @@ func Update_Shop_Detail(c *gin.Context) {
 		c.PostForm("dayOff"), c.PostForm("phoneNumber"), c.PostForm("email"), shop_id})
 
 	newToken, _ := middleware.GenerateToken("shop", shop_id)
-	tools.SetHkey("shop", utils.IntToString(shop_id), newToken)
 	utils.Success(c, map[string]interface{}{"token": newToken}, "Update Success")
 }
 
@@ -97,8 +95,8 @@ func Upload_Shop_Image(c *gin.Context) {
 }
 
 func Get_Shop_Image(c *gin.Context) {
-	path := "./uploads/shop/" + c.Param("shopID") + "/" + c.Param("imageID")
-	c.File(path)
+	path := "./uploads/shop/" + c.Param("shopId") + "/" + c.Param("imageId")
+	utils.HandlerImage(c, path)
 }
 
 func Insert_Shop_Car(c *gin.Context) {
@@ -114,10 +112,9 @@ func Insert_Shop_Car(c *gin.Context) {
 
 	model.Insert_Shop_Car([]interface{}{
 		shop_id, c.PostForm("carName"), c.PostForm("carBrand"), c.PostForm("carImage"),
-		c.PostForm("carPrice"), c.PostForm("carFee")})
+		c.PostForm("carPrice"), c.PostForm("carFee"), c.PostForm("carYear")})
 
 	newToken, _ := middleware.GenerateToken("shop", shop_id)
-	tools.SetHkey("shop", utils.IntToString(shop_id), newToken)
 	utils.Success(c, map[string]interface{}{"token": newToken}, "Insert Success")
 }
 
@@ -134,11 +131,10 @@ func Update_Shop_Car(c *gin.Context) {
 
 	model.Update_Shop_Car([]interface{}{
 		c.PostForm("carName"), c.PostForm("carBrand"), c.PostForm("carImage"),
-		c.PostForm("carPrice"), c.PostForm("carFee"), c.PostForm("shelves"),
-		c.PostForm("carId"), shop_id})
+		c.PostForm("carPrice"), c.PostForm("carFee"), c.PostForm("carYear"), c.PostForm("shelves"),
+		c.Param("carId"), shop_id})
 
 	newToken, _ := middleware.GenerateToken("shop", shop_id)
-	tools.SetHkey("shop", utils.IntToString(shop_id), newToken)
 	utils.Success(c, map[string]interface{}{"token": newToken}, "Update Success")
 }
 
@@ -153,10 +149,9 @@ func Delete_Shop_Car(c *gin.Context) {
 		return
 	}
 
-	model.Delete_Shop_Car([]interface{}{c.GetHeader("carId"), shop_id})
+	model.Delete_Shop_Car([]interface{}{c.Param("carId"), shop_id})
 
 	newToken, _ := middleware.GenerateToken("shop", shop_id)
-	tools.SetHkey("shop", utils.IntToString(shop_id), newToken)
 	utils.Success(c, map[string]interface{}{"token": newToken}, "Delete Success")
 }
 
@@ -171,10 +166,9 @@ func Get_Shop_Car(c *gin.Context) {
 		return
 	}
 
-	row := model.Get_Shop_Car([]interface{}{c.GetHeader("carId"), shop_id})
+	row := model.Get_Shop_Car([]interface{}{c.Param("carId"), shop_id})
 
 	newToken, _ := middleware.GenerateToken("shop", shop_id)
-	tools.SetHkey("shop", utils.IntToString(shop_id), newToken)
 	utils.Success(c, map[string]interface{}{"token": newToken, "car": row}, "Success")
 }
 
@@ -185,9 +179,8 @@ func Get_Shop_Car_List(c *gin.Context) {
 		return
 	}
 
-	row := model.Get_Shop_Car_List([]interface{}{c.GetHeader("carId"), shop_id})
+	row := model.Get_Shop_Car_List([]interface{}{shop_id})
 
 	newToken, _ := middleware.GenerateToken("shop", shop_id)
-	tools.SetHkey("shop", utils.IntToString(shop_id), newToken)
 	utils.Success(c, map[string]interface{}{"token": newToken, "car": row}, "Success")
 }

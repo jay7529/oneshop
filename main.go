@@ -1,6 +1,8 @@
 package main
 
-import "oneshop/app"
+import (
+	"oneshop/app"
+)
 
 func main() {
 

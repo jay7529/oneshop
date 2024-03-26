@@ -1,10 +1,10 @@
 package controller
 
 import (
+	"oneshop/database"
 	"oneshop/internal/model"
 	"oneshop/internal/verify"
 	"oneshop/middleware"
-	"oneshop/tools"
 	"oneshop/utils"
 
 	"time"
@@ -27,7 +27,7 @@ func Admin_Login(c *gin.Context) {
 	}
 
 	//取得token
-	token, _ := middleware.GenerateToken("admin", row[0].Admin_id)
+	token, _ := middleware.GenerateToken("admin", row[0].AdminId)
 
 	// model.Insert_login_log([]interface{}{row[0]["user_id"], c.PostForm("account"), c.ClientIP()})
 
@@ -44,7 +44,7 @@ func Get_Admin_Detail(c *gin.Context) {
 	row := model.Select_Admin_Detail([]interface{}{admin_id})
 
 	newToken, _ := middleware.GenerateToken("admin", admin_id)
-	tools.SetHkey("shop", utils.IntToString(admin_id), newToken)
+	database.SetHkey("shop", utils.IntToString(admin_id), newToken)
 	utils.Success(c, map[string]interface{}{"token": newToken, "admin": row}, "Success")
 }
 
@@ -65,7 +65,7 @@ func Update_Admin_Detail(c *gin.Context) {
 		c.PostForm("dayOff"), c.PostForm("phoneNumber"), c.PostForm("email"), admin_id})
 
 	newToken, _ := middleware.GenerateToken("admin", admin_id)
-	tools.SetHkey("shop", utils.IntToString(admin_id), newToken)
+	database.SetHkey("shop", utils.IntToString(admin_id), newToken)
 	utils.Success(c, map[string]interface{}{"token": newToken}, "Update Success")
 }
 

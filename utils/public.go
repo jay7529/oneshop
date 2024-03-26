@@ -1,20 +1,12 @@
 package utils
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 )
-
-func CheckErr(err error) bool {
-	if err != nil {
-		fmt.Printf("%s\n", err.Error())
-	}
-	return true
-}
 
 func UploadImage(c *gin.Context, dirname string, filename string) {
 
@@ -34,7 +26,7 @@ func UploadImage(c *gin.Context, dirname string, filename string) {
 		return
 	}
 
-	Success(c, map[string]interface{}{"filepath": filename}, "Upload Success")
+	Success(c, map[string]interface{}{"filepath": filename + filepath.Ext(file.Filename)}, "Upload Success")
 }
 
 func HandlerImage(c *gin.Context, path string) {

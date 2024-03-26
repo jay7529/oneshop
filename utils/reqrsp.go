@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -29,4 +30,11 @@ func Error(c *gin.Context, err error) {
 			"code": 400,
 			"err":  err,
 		})
+}
+
+func CheckErr(err error) bool {
+	if err != nil {
+		fmt.Printf("%s\n", err.Error())
+	}
+	return true
 }

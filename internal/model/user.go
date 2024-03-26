@@ -1,8 +1,8 @@
 package model
 
 import (
+	"oneshop/database"
 	table "oneshop/internal/table"
-	"oneshop/tools"
 )
 
 // // 用帳號查詢user_id
@@ -31,14 +31,14 @@ import (
 
 // 查詢car list
 func User_Get_Shop_List(data []interface{}) []table.Shop_detail {
-	sql := `SELECT IFNULL(shop_name, ''), IFNULL(shop_info, ''), IFNULL(shop_image, ''),
+	sql := `SELECT shop_id, IFNULL(shop_name, ''), IFNULL(shop_info, ''), IFNULL(shop_image, ''),
 	 IFNULL(corporation_name, ''), IFNULL(shop_location, ''), IFNULL(open_time, ''), IFNULL(dayoff, ''),
 	 IFNULL(phonenumber, ''), IFNULL(email, '') FROM shop_detail`
-	rows := tools.Query(sql, data)
+	rows := database.Query(sql, data)
 	result := []table.Shop_detail{}
 	for rows.Next() {
 		var row table.Shop_detail
-		err := rows.Scan(&row.ShopName, &row.ShopInfo, &row.ShopImage,
+		err := rows.Scan(&row.ShopId, &row.ShopName, &row.ShopInfo, &row.ShopImage,
 			&row.CorporationName, &row.ShopLocation, &row.OpenTime,
 			&row.DayOff, &row.PhoneNumber, &row.Email)
 		if err != nil {

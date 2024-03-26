@@ -1,13 +1,13 @@
 package table
 
 type Admin struct {
-	Admin_id int
+	AdminId  int
 	Account  string
 	Password string
 }
 
 type Admin_detail struct {
-	Admin_id        int
+	AdminId         int
 	ShopName        string
 	ShopInfo        string
 	ShopImage       string
@@ -20,13 +20,13 @@ type Admin_detail struct {
 }
 
 type Shop struct {
-	Shop_id  int
+	ShopId   int
 	Account  string
 	Password string
 }
 
 type Shop_detail struct {
-	Shop_id         int
+	ShopId          int
 	ShopName        string
 	ShopInfo        string
 	ShopImage       string
@@ -39,12 +39,13 @@ type Shop_detail struct {
 }
 
 type Car struct {
-	Car_id    int
-	Shop_id   int
-	Car_Name  string
-	Car_Brand string
-	Car_Image string
-	Car_Price int
-	Car_Fee   int
-	Shelves   bool
+	CarId    int
+	ShopId   int
+	CarName  string
+	CarBrand string
+	CarImage string
+	CarPrice int
+	CarFee   int
+	CarYear  int
+	Shelves  bool
 }

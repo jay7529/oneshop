@@ -1,8 +1,8 @@
 package app
 
 import (
-	"oneshop/internal/routers"
 	"oneshop/middleware"
+	"oneshop/routers"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,11 +14,12 @@ func InitGin() {
 	app.Use(middleware.Cors)
 	app.TrustedPlatform = "Client-IP"
 
-	// server := socketio.NewServer(nil)
+	routers.RegisterRouter(app)
+
+	// // socket io
+	// 	server := socketio.NewServer(nil)
 	// go server.Serve()
 	// defer server.Close()
-
-	routers.RegisterRouter(app)
 	// routers.RegisterSocket(app, server)
 
 	app.Run(":8000")

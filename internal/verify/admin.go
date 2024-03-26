@@ -1,8 +1,8 @@
 package verify
 
 import (
+	"oneshop/database"
 	"oneshop/middleware"
-	"oneshop/tools"
 	"oneshop/utils"
 	"time"
 
@@ -13,22 +13,12 @@ import (
 // token驗證
 func Admin_Token_Verify(c *gin.Context) int {
 
-	type Verify struct {
-		Token string `validate:"required,min=1"`
-	}
-	verify := &Verify{
-		Token: c.GetHeader("token"),
-	}
-	err := validator.New().Struct(verify)
-	if err == nil {
-		return 0
-	}
-
 	claim, err := middleware.ParseToken(c.GetHeader("token"))
-	if err == nil && claim != nil && claim.ExpiresAt >= time.Now().Unix() &&
+	if err == nil && claim != nil &&
+		claim.ExpiresAt >= time.Now().Unix() &&
 		claim.Identity == "admin" &&
-		tools.ExistsHkey("admin", utils.IntToString(claim.ID)) &&
-		c.GetHeader("token") == tools.GetHkey("admin", utils.IntToString(claim.ID)) {
+		database.ExistsHkey("admin", utils.IntToString(claim.ID)) &&
+		c.GetHeader("token") == database.GetHkey("admin", utils.IntToString(claim.ID)) {
 		return claim.ID
 	} else {
 		return 0
@@ -37,13 +27,13 @@ func Admin_Token_Verify(c *gin.Context) int {
 
 func Admin_Login_Verify(c *gin.Context) bool {
 	type Verify struct {
-		Account  string `validate:"required,max=15,min=1"`
-		Password string `validate:"required,max=15,min=1"`
+		account  string `validate:"required,max=15,min=1"`
+		password string `validate:"required,max=15,min=1"`
 	}
 
 	verify := &Verify{
-		Account:  c.PostForm("account"),
-		Password: c.PostForm("password"),
+		account:  c.PostForm("account"),
+		password: c.PostForm("password"),
 	}
 
 	err := validator.New().Struct(verify)

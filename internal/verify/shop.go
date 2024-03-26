@@ -1,8 +1,8 @@
 package verify
 
 import (
+	"oneshop/database"
 	"oneshop/middleware"
-	"oneshop/tools"
 	"oneshop/utils"
 	"time"
 
@@ -14,10 +14,11 @@ import (
 func Shop_Token_Verify(c *gin.Context) int {
 
 	claim, err := middleware.ParseToken(c.GetHeader("token"))
-	if err == nil && claim != nil && claim.ExpiresAt >= time.Now().Unix() &&
+	if err == nil && claim != nil &&
+		claim.ExpiresAt >= time.Now().Unix() &&
 		claim.Identity == "shop" &&
-		tools.ExistsHkey("shop", utils.IntToString(claim.ID)) &&
-		c.GetHeader("token") == tools.GetHkey("shop", utils.IntToString(claim.ID)) {
+		database.ExistsHkey("shop", utils.IntToString(claim.ID)) &&
+		c.GetHeader("token") == database.GetHkey("shop", utils.IntToString(claim.ID)) {
 		return claim.ID
 	} else {
 		return 0
@@ -26,13 +27,13 @@ func Shop_Token_Verify(c *gin.Context) int {
 
 func Shop_Login_Verify(c *gin.Context) bool {
 	type Verify struct {
-		Account  string `validate:"required,max=15,min=1"`
-		Password string `validate:"required,max=15,min=1"`
+		account  string `validate:"required,max=15,min=1"`
+		password string `validate:"required,max=15,min=1"`
 	}
 
 	verify := &Verify{
-		Account:  c.PostForm("account"),
-		Password: c.PostForm("password"),
+		account:  c.PostForm("account"),
+		password: c.PostForm("password"),
 	}
 
 	err := validator.New().Struct(verify)
@@ -75,6 +76,7 @@ func Insert_Shop_Car_Verify(c *gin.Context) bool {
 		CarImage string `validate:"required,max=100"`
 		CarPrice string `validate:"required,max=100"`
 		CarFee   string `validate:"required,max=100"`
+		CarYear  string `validate:"required,max=100"`
 	}
 
 	verify := &Verify{
@@ -83,6 +85,7 @@ func Insert_Shop_Car_Verify(c *gin.Context) bool {
 		CarImage: c.PostForm("carImage"),
 		CarPrice: c.PostForm("carPrice"),
 		CarFee:   c.PostForm("carFee"),
+		CarYear:  c.PostForm("carYear"),
 	}
 
 	err := validator.New().Struct(verify)
@@ -97,16 +100,18 @@ func Update_Shop_Car_Verify(c *gin.Context) bool {
 		CarImage string `validate:"required,max=100"`
 		CarPrice string `validate:"required,max=100"`
 		CarFee   string `validate:"required,max=100"`
+		CarYear  string `validate:"required,max=100"`
 		Shelves  string `validate:"required,max=1"`
 	}
 
 	verify := &Verify{
-		CarId:    c.PostForm("carId"),
+		CarId:    c.Param("carId"),
 		CarName:  c.PostForm("carName"),
 		CarBrand: c.PostForm("carBrand"),
 		CarImage: c.PostForm("carImage"),
 		CarPrice: c.PostForm("carPrice"),
 		CarFee:   c.PostForm("carFee"),
+		CarYear:  c.PostForm("carYear"),
 		Shelves:  c.PostForm("shelves"),
 	}
 
@@ -120,7 +125,7 @@ func Delete_Shop_Car_Verify(c *gin.Context) bool {
 	}
 
 	verify := &Verify{
-		CarId: c.GetHeader("carId"),
+		CarId: c.Param("carId"),
 	}
 
 	err := validator.New().Struct(verify)
@@ -133,7 +138,7 @@ func Get_Shop_Car_Verify(c *gin.Context) bool {
 	}
 
 	verify := &Verify{
-		CarId: c.GetHeader("carId"),
+		CarId: c.Param("carId"),
 	}
 
 	err := validator.New().Struct(verify)

@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"oneshop/database"
+	"oneshop/utils"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -33,6 +35,10 @@ func GenerateToken(identity string, id int) (string, error) {
 
 	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	token, err := tokenClaims.SignedString(jwtSecret)
+
+	// 存進redis
+	database.SetHkey(identity, utils.IntToString(id), token)
+
 	return token, err
 }
 

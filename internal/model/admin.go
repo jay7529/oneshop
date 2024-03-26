@@ -1,18 +1,18 @@
 package model
 
 import (
+	"oneshop/database"
 	table "oneshop/internal/table"
-	"oneshop/tools"
 )
 
 // 用帳號查詢admin_id
 func Select_Admin_Id(data []interface{}) []table.Admin {
 	sql := `SELECT admin_id FROM admin WHERE account = ? AND password = ?`
-	rows := tools.Query(sql, data)
+	rows := database.Query(sql, data)
 	result := []table.Admin{}
 	for rows.Next() {
 		var row table.Admin
-		err := rows.Scan(&row.Admin_id)
+		err := rows.Scan(&row.AdminId)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -26,7 +26,7 @@ func Select_Admin_Detail(data []interface{}) []table.Admin_detail {
 	sql := `SELECT shop_name, shop_info, shop_image, corporation_name,`
 	sql += ` shop_location, open_time, dayoff, phonenumber, email`
 	sql += ` FROM admin_detail WHERE admin_id = ?`
-	rows := tools.Query(sql, data)
+	rows := database.Query(sql, data)
 	result := []table.Admin_detail{}
 	for rows.Next() {
 		var row table.Admin_detail
@@ -47,7 +47,7 @@ func Update_Admin_Detail(data []interface{}) []table.Admin {
 	sql += ` shop_name = ?, shop_info = ?, shop_image = ?, corporation_name = ?,`
 	sql += ` shop_location = ?, open_time = ?, dayoff = ?, phonenumber = ?, email = ?`
 	sql += ` WHERE admin_id = ?`
-	tools.Update(sql, data)
+	database.Update(sql, data)
 	result := []table.Admin{}
 	return result
 }
