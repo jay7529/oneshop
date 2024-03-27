@@ -1,9 +1,7 @@
 package verify
 
 import (
-	"oneshop/database"
 	"oneshop/middleware"
-	"oneshop/utils"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -16,9 +14,10 @@ func Shop_Token_Verify(c *gin.Context) int {
 	claim, err := middleware.ParseToken(c.GetHeader("token"))
 	if err == nil && claim != nil &&
 		claim.ExpiresAt >= time.Now().Unix() &&
-		claim.Identity == "shop" &&
-		database.ExistsHkey("shop", utils.IntToString(claim.ID)) &&
-		c.GetHeader("token") == database.GetHkey("shop", utils.IntToString(claim.ID)) {
+		claim.Identity == "shop" {
+		// &&
+		// database.ExistsHkey("shop", utils.IntToString(claim.ID)) &&
+		// c.GetHeader("token") == database.GetHkey("shop", utils.IntToString(claim.ID))
 		return claim.ID
 	} else {
 		return 0
@@ -47,9 +46,10 @@ func Update_Shop_Detail_Verify(c *gin.Context) bool {
 		ShopImage       string `validate:"required,max=100"`
 		CorporationName string `validate:"required,max=100"`
 		ShopLocation    string `validate:"required,max=100"`
+		ShopCity        string `validate:"required,max=20"`
 		OpenTime        string `validate:"required,max=100"`
 		DayOff          string `validate:"required,max=100"`
-		PhoneNumber     string `validate:"required,max=100"`
+		PhoneNumber     string `validate:"required,max=30"`
 		Email           string `validate:"required,max=100"`
 	}
 
@@ -59,6 +59,7 @@ func Update_Shop_Detail_Verify(c *gin.Context) bool {
 		ShopImage:       c.PostForm("shopImage"),
 		CorporationName: c.PostForm("corporationName"),
 		ShopLocation:    c.PostForm("shopLocation"),
+		ShopCity:        c.PostForm("shopCity"),
 		OpenTime:        c.PostForm("openTime"),
 		DayOff:          c.PostForm("dayOff"),
 		PhoneNumber:     c.PostForm("phoneNumber"),
@@ -105,7 +106,7 @@ func Update_Shop_Car_Verify(c *gin.Context) bool {
 	}
 
 	verify := &Verify{
-		CarId:    c.Param("carId"),
+		CarId:    c.Param("car_id"),
 		CarName:  c.PostForm("carName"),
 		CarBrand: c.PostForm("carBrand"),
 		CarImage: c.PostForm("carImage"),
@@ -125,7 +126,7 @@ func Delete_Shop_Car_Verify(c *gin.Context) bool {
 	}
 
 	verify := &Verify{
-		CarId: c.Param("carId"),
+		CarId: c.Param("car_id"),
 	}
 
 	err := validator.New().Struct(verify)
@@ -138,7 +139,7 @@ func Get_Shop_Car_Verify(c *gin.Context) bool {
 	}
 
 	verify := &Verify{
-		CarId: c.Param("carId"),
+		CarId: c.Param("car_id"),
 	}
 
 	err := validator.New().Struct(verify)

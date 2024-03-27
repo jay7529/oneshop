@@ -24,14 +24,14 @@ func Select_Shop_Id(data []interface{}) []table.Shop {
 // 查詢shop detail
 func Get_Shop_Detail(data []interface{}) []table.Shop_detail {
 	sql := `SELECT shop_id, IFNULL(shop_name, ''), IFNULL(shop_info, ''), IFNULL(shop_image, ''),
-	 IFNULL(corporation_name, ''), IFNULL(shop_location, ''), IFNULL(open_time, ''), IFNULL(dayoff, ''),
+	 IFNULL(corporation_name, ''), IFNULL(shop_location, ''), IFNULL(shop_city, ''), IFNULL(open_time, ''), IFNULL(dayoff, ''),
 	 IFNULL(phonenumber, ''), IFNULL(email, '') FROM shop_detail WHERE shop_id = ?`
 	rows := database.Query(sql, data)
 	result := []table.Shop_detail{}
 	for rows.Next() {
 		var row table.Shop_detail
 		err := rows.Scan(&row.ShopId, &row.ShopName, &row.ShopInfo, &row.ShopImage,
-			&row.CorporationName, &row.ShopLocation, &row.OpenTime,
+			&row.CorporationName, &row.ShopLocation, &row.ShopCity, &row.OpenTime,
 			&row.DayOff, &row.PhoneNumber, &row.Email)
 		if err != nil {
 			panic(err.Error())
@@ -44,7 +44,7 @@ func Get_Shop_Detail(data []interface{}) []table.Shop_detail {
 // 更新shop detail
 func Update_Shop_Detail(data []interface{}) []table.Shop {
 	sql := `UPDATE shop_detail SET shop_name = ?, shop_info = ?, shop_image = ?, corporation_name = ?,
-	 shop_location = ?, open_time = ?, dayoff = ?, phonenumber = ?, email = ? WHERE shop_id = ?`
+	 shop_location = ?, shop_city = ?, open_time = ?, dayoff = ?, phonenumber = ?, email = ? WHERE shop_id = ?`
 	database.Update(sql, data)
 	result := []table.Shop{}
 	return result

@@ -77,8 +77,8 @@ func Update_Shop_Detail(c *gin.Context) {
 
 	model.Update_Shop_Detail([]interface{}{
 		c.PostForm("shopName"), c.PostForm("shopInfo"), c.PostForm("shopImage"),
-		c.PostForm("corporationName"), c.PostForm("shopLocation"), c.PostForm("openTime"),
-		c.PostForm("dayOff"), c.PostForm("phoneNumber"), c.PostForm("email"), shop_id})
+		c.PostForm("corporationName"), c.PostForm("shopLocation"), c.PostForm("shopCity"),
+		c.PostForm("openTime"), c.PostForm("dayOff"), c.PostForm("phoneNumber"), c.PostForm("email"), shop_id})
 
 	newToken, _ := middleware.GenerateToken("shop", shop_id)
 	utils.Success(c, map[string]interface{}{"token": newToken}, "Update Success")
@@ -95,7 +95,7 @@ func Upload_Shop_Image(c *gin.Context) {
 }
 
 func Get_Shop_Image(c *gin.Context) {
-	path := "./uploads/shop/" + c.Param("shopId") + "/" + c.Param("imageId")
+	path := "./uploads/shop/" + c.Param("shop_id") + "/" + c.Param("imageId")
 	utils.HandlerImage(c, path)
 }
 
@@ -132,7 +132,7 @@ func Update_Shop_Car(c *gin.Context) {
 	model.Update_Shop_Car([]interface{}{
 		c.PostForm("carName"), c.PostForm("carBrand"), c.PostForm("carImage"),
 		c.PostForm("carPrice"), c.PostForm("carFee"), c.PostForm("carYear"), c.PostForm("shelves"),
-		c.Param("carId"), shop_id})
+		c.Param("car_id"), shop_id})
 
 	newToken, _ := middleware.GenerateToken("shop", shop_id)
 	utils.Success(c, map[string]interface{}{"token": newToken}, "Update Success")
@@ -149,7 +149,7 @@ func Delete_Shop_Car(c *gin.Context) {
 		return
 	}
 
-	model.Delete_Shop_Car([]interface{}{c.Param("carId"), shop_id})
+	model.Delete_Shop_Car([]interface{}{c.Param("car_id"), shop_id})
 
 	newToken, _ := middleware.GenerateToken("shop", shop_id)
 	utils.Success(c, map[string]interface{}{"token": newToken}, "Delete Success")
@@ -166,7 +166,7 @@ func Get_Shop_Car(c *gin.Context) {
 		return
 	}
 
-	row := model.Get_Shop_Car([]interface{}{c.Param("carId"), shop_id})
+	row := model.Get_Shop_Car([]interface{}{c.Param("car_id"), shop_id})
 
 	newToken, _ := middleware.GenerateToken("shop", shop_id)
 	utils.Success(c, map[string]interface{}{"token": newToken, "car": row}, "Success")

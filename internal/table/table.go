@@ -32,6 +32,7 @@ type Shop_detail struct {
 	ShopImage       string
 	CorporationName string
 	ShopLocation    string
+	ShopCity        string
 	OpenTime        string
 	DayOff          string
 	PhoneNumber     string
