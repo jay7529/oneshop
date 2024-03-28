@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"oneshop/database"
 	"oneshop/internal/model"
 	"oneshop/internal/verify"
 	"oneshop/middleware"
@@ -35,7 +34,7 @@ func Admin_Login(c *gin.Context) {
 }
 
 func Get_Admin_Detail(c *gin.Context) {
-	admin_id := verify.Admin_Token_Verify(c)
+	admin_id := middleware.VerifyToken(c, "admin")
 	if admin_id == 0 {
 		utils.Failed(c, "Token Error")
 		return
@@ -44,12 +43,11 @@ func Get_Admin_Detail(c *gin.Context) {
 	row := model.Select_Admin_Detail([]interface{}{admin_id})
 
 	newToken, _ := middleware.GenerateToken("admin", admin_id)
-	database.SetHkey("shop", utils.IntToString(admin_id), newToken)
 	utils.Success(c, map[string]interface{}{"token": newToken, "admin": row}, "Success")
 }
 
 func Update_Admin_Detail(c *gin.Context) {
-	admin_id := verify.Admin_Token_Verify(c)
+	admin_id := middleware.VerifyToken(c, "admin")
 	if admin_id == 0 {
 		utils.Failed(c, "Token Error")
 		return
@@ -58,19 +56,18 @@ func Update_Admin_Detail(c *gin.Context) {
 		utils.Failed(c, "Parameter Error")
 		return
 	}
-	// p.UploadImage(c, "admin/"+convert.IntToString(admin_id)+"/", "test")
+
 	model.Update_Admin_Detail([]interface{}{
 		c.PostForm("shopName"), c.PostForm("shopInfo"), c.PostForm("shopImage"),
 		c.PostForm("corporationName"), c.PostForm("shopLocation"), c.PostForm("openTime"),
 		c.PostForm("dayOff"), c.PostForm("phoneNumber"), c.PostForm("email"), admin_id})
 
 	newToken, _ := middleware.GenerateToken("admin", admin_id)
-	database.SetHkey("shop", utils.IntToString(admin_id), newToken)
 	utils.Success(c, map[string]interface{}{"token": newToken}, "Update Success")
 }
 
 func Upload_Admin_Image(c *gin.Context) {
-	admin_id := verify.Admin_Token_Verify(c)
+	admin_id := middleware.VerifyToken(c, "admin")
 	if admin_id == 0 {
 		utils.Failed(c, "Token Error")
 		return

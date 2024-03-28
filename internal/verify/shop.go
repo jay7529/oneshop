@@ -1,38 +1,47 @@
 package verify
 
 import (
-	"oneshop/middleware"
-	"time"
-
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
 )
 
-// token驗證
-func Shop_Token_Verify(c *gin.Context) int {
-
-	claim, err := middleware.ParseToken(c.GetHeader("token"))
-	if err == nil && claim != nil &&
-		claim.ExpiresAt >= time.Now().Unix() &&
-		claim.Identity == "shop" {
-		// &&
-		// database.ExistsHkey("shop", utils.IntToString(claim.ID)) &&
-		// c.GetHeader("token") == database.GetHkey("shop", utils.IntToString(claim.ID))
-		return claim.ID
-	} else {
-		return 0
+func Shop_Singup_Verify(c *gin.Context) bool {
+	type Verify struct {
+		Email string `validate:"required,email"`
 	}
+
+	verify := &Verify{
+		Email: c.PostForm("email"),
+	}
+
+	err := validator.New().Struct(verify)
+	return err == nil
+}
+
+func Shop_Code_Verify(c *gin.Context) bool {
+	type Verify struct {
+		Email string `validate:"required,email"`
+		Code  string `validate:"required,max=6,min=6"`
+	}
+
+	verify := &Verify{
+		Email: c.PostForm("email"),
+		Code:  c.PostForm("code"),
+	}
+
+	err := validator.New().Struct(verify)
+	return err == nil
 }
 
 func Shop_Login_Verify(c *gin.Context) bool {
 	type Verify struct {
-		account  string `validate:"required,max=15,min=1"`
-		password string `validate:"required,max=15,min=1"`
+		Account  string `validate:"required,max=100,min=1"`
+		Password string `validate:"required,max=15,min=1"`
 	}
 
 	verify := &Verify{
-		account:  c.PostForm("account"),
-		password: c.PostForm("password"),
+		Account:  c.PostForm("account"),
+		Password: c.PostForm("password"),
 	}
 
 	err := validator.New().Struct(verify)

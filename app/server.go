@@ -22,6 +22,6 @@ func InitGin() {
 	// defer server.Close()
 	// routers.RegisterSocket(app, server)
 
-	app.Run(":8000")
+	app.Run()
 
 }

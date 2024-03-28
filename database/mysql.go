@@ -1,23 +1,51 @@
 package database
 
 import (
+	"context"
 	"database/sql"
+	"fmt"
+	"net"
 	"oneshop/utils"
 
-	_ "github.com/go-sql-driver/mysql"
+	"cloud.google.com/go/cloudsqlconn"
+	"github.com/go-sql-driver/mysql"
 )
 
-func GetDB() *sql.DB {
+func connectWithConnector() (*sql.DB, error) {
+	var (
+		dbUser                 = "J"
+		dbPwd                  = "j75297529"
+		dbName                 = "LAA0989476oneshop"
+		instanceConnectionName = "oneshop-418410:asia-northeast1:oneshop"
+		usePrivate             = ""
+	)
 
-	DB, err := sql.Open("mysql", "root:Oz444yvyx88@tcp(127.0.0.1:3306)/LAA0989476oneshop")
-	utils.CheckErr(err)
+	d, err := cloudsqlconn.NewDialer(context.Background())
+	if err != nil {
+		return nil, fmt.Errorf("cloudsqlconn.NewDialer: %w", err)
+	}
+	var opts []cloudsqlconn.DialOption
+	if usePrivate != "" {
+		opts = append(opts, cloudsqlconn.WithPrivateIP())
+	}
+	mysql.RegisterDialContext("cloudsqlconn",
+		func(ctx context.Context, addr string) (net.Conn, error) {
+			return d.Dial(ctx, instanceConnectionName, opts...)
+		})
 
-	return DB
+	dbURI := fmt.Sprintf("%s:%s@cloudsqlconn(localhost:3306)/%s?parseTime=true", dbUser, dbPwd, dbName)
+
+	dbPool, err := sql.Open("mysql", dbURI)
+	if err != nil {
+		return nil, fmt.Errorf("sql.Open: %w", err)
+	}
+	return dbPool, nil
 }
 
 func Insert(sqlstring string, data []interface{}) int {
 
-	DB := GetDB()
+	DB, err := connectWithConnector()
+	utils.CheckErr(err)
 
 	stmt, err := DB.Prepare(sqlstring)
 	utils.CheckErr(err)
@@ -35,7 +63,8 @@ func Insert(sqlstring string, data []interface{}) int {
 
 func Update(sqlstring string, data []interface{}) int {
 
-	DB := GetDB()
+	DB, err := connectWithConnector()
+	utils.CheckErr(err)
 
 	stmt, err := DB.Prepare(sqlstring)
 	utils.CheckErr(err)
@@ -53,7 +82,8 @@ func Update(sqlstring string, data []interface{}) int {
 
 func Delete(sqlstring string, data []interface{}) int {
 
-	DB := GetDB()
+	DB, err := connectWithConnector()
+	utils.CheckErr(err)
 
 	stmt, err := DB.Prepare(sqlstring)
 	utils.CheckErr(err)
@@ -71,7 +101,8 @@ func Delete(sqlstring string, data []interface{}) int {
 
 func Query(sqlstring string, data []interface{}) *sql.Rows {
 
-	DB := GetDB()
+	DB, err := connectWithConnector()
+	utils.CheckErr(err)
 
 	rows, err := DB.Query(sqlstring, data...)
 	utils.CheckErr(err)

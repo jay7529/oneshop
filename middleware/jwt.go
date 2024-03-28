@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
 )
 
 var jwtSecret = []byte("setting.JwtSecret")
@@ -54,4 +55,18 @@ func ParseToken(token string) (*Claims, error) {
 		}
 	}
 	return nil, err
+}
+
+func VerifyToken(c *gin.Context, identity string) int {
+
+	claim, err := ParseToken(c.GetHeader("token"))
+	if err == nil && claim != nil &&
+		claim.ExpiresAt >= time.Now().Unix() &&
+		claim.Identity == identity &&
+		database.ExistsHkey(identity, utils.IntToString(claim.ID)) &&
+		c.GetHeader("token") == database.GetHkey("shop", utils.IntToString(claim.ID)) {
+		return claim.ID
+	} else {
+		return 0
+	}
 }

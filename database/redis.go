@@ -1,28 +1,29 @@
 package database
 
 import (
-	"fmt"
+	"os"
+	"time"
 
 	"github.com/go-redis/redis"
 )
 
 var client = redis.NewClient(&redis.Options{
-	Addr: "127.0.0.1:6379",
+	Addr: os.Getenv("REDISHOST") + ":" + os.Getenv("REDISPORT"),
 	DB:   0,
 })
 
-func Setkey(id string) {
+func Setkey(key string, value string, time time.Duration) {
 
-	var err = client.Set("golang", id, 0).Err()
+	var err = client.Set(key, value, time).Err()
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 }
 
-func Getkey(id string) interface{} {
+func Getkey(key string) interface{} {
 
-	val, err := client.Get("golang").Result()
+	val, err := client.Get(key).Result()
 	if err != nil {
 		panic(err)
 	}
@@ -30,18 +31,9 @@ func Getkey(id string) interface{} {
 
 }
 
-func SetHkey(key_name string, field string, value interface{}) {
+func Delkey(key string) interface{} {
 
-	var err = client.HSet(key_name, field, value).Err()
-	if err != nil {
-		panic(err)
-	}
-
-}
-
-func GetHkey(key_name string, field string) interface{} {
-
-	val, err := client.HGet(key_name, field).Result()
+	val, err := client.Del(key).Result()
 	if err != nil {
 		panic(err)
 	}
@@ -49,9 +41,28 @@ func GetHkey(key_name string, field string) interface{} {
 
 }
 
-func ExistsHkey(key_name string, field string) bool {
+func Existskey(key string) bool {
 
-	val, err := client.HExists(key_name, field).Result()
+	val, err := client.Exists(key).Result()
+	if err != nil {
+		panic(err)
+	}
+	return val == 1
+
+}
+
+func SetHkey(key string, field string, value interface{}) {
+
+	var err = client.HSet(key, field, value).Err()
+	if err != nil {
+		panic(err)
+	}
+
+}
+
+func GetHkey(key string, field string) interface{} {
+
+	val, err := client.HGet(key, field).Result()
 	if err != nil {
 		panic(err)
 	}
@@ -59,9 +70,19 @@ func ExistsHkey(key_name string, field string) bool {
 
 }
 
-func DelHkey(key_name string, field string) {
+func ExistsHkey(key string, field string) bool {
 
-	var err = client.HDel(key_name, field).Err()
+	val, err := client.HExists(key, field).Result()
+	if err != nil {
+		panic(err)
+	}
+	return val
+
+}
+
+func DelHkey(key string, field string) {
+
+	var err = client.HDel(key, field).Err()
 	if err != nil {
 		panic(err)
 	}

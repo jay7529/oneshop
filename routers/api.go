@@ -20,6 +20,9 @@ func RegisterRouter(app *gin.Engine) {
 
 	shop := app.Group("/shop")
 	{
+		shop.POST("singup", controller.Shop_Singup)
+		shop.POST("code", controller.Shop_Code)
+
 		shop.POST("/login", controller.Shop_Login)
 		shop.DELETE("/logout", controller.Shop_Logout)
 

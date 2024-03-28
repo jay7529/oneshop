@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"crypto/rand"
+	"math/big"
 	"oneshop/database"
 	"oneshop/internal/model"
 	"oneshop/internal/verify"
@@ -12,6 +14,57 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 )
+
+func Shop_Singup(c *gin.Context) {
+	if !verify.Shop_Singup_Verify(c) {
+		utils.Failed(c, "Parameter Error")
+		return
+	}
+
+	// 產生驗證碼
+	code := ""
+	for i := 0; i < 6; i++ {
+		n, _ := rand.Int(rand.Reader, big.NewInt(9))
+		code = code + utils.Int64ToString(n.Int64())
+	}
+
+	utils.SendEmail(
+		"【OneShop】認証コード送信のお知らせ",
+		`このメールは、 「OneShop」に関するご本人確認のため送付しています。
+		登録を続けるには、次の認証コードを登録ページ内に入力してください。
+		【認証コード】`+code+
+			`
+			※60分以内に手続きが完了しない場合は無効となります。
+
+		───────────────────────────────────
+		このメールにお心あたりのない方は、お手数ですがこのメールを削除してください。
+		───────────────────────────────────
+		`,
+		c.PostForm("email"))
+
+	database.Setkey(c.PostForm("email"), code, 60*time.Minute)
+
+	utils.Success(c, nil, "SingUp Success")
+}
+
+func Shop_Code(c *gin.Context) {
+	if !verify.Shop_Code_Verify(c) {
+		utils.Failed(c, "Parameter Error")
+		return
+	}
+	if !database.Existskey(c.PostForm("email")) || c.PostForm("code") != database.Getkey(c.PostForm("email")) {
+		utils.Failed(c, "認証コードが正しくないか、有効期限が切れています。")
+		return
+	}
+
+	database.Delkey(c.PostForm("email"))
+
+	model.Insert_Shop([]interface{}{
+		c.PostForm("email"), utils.MD5crypt(c.PostForm("code"))})
+
+	utils.Success(c, nil, "SingUp Success")
+
+}
 
 func Shop_Login(c *gin.Context) {
 	if !verify.Shop_Login_Verify(c) {
@@ -28,7 +81,6 @@ func Shop_Login(c *gin.Context) {
 
 	//取得token
 	token, _ := middleware.GenerateToken("shop", row[0].ShopId)
-	database.SetHkey("shop", utils.IntToString(row[0].ShopId), token)
 
 	// 新增登入記錄
 	// model.Insert_login_log([]interface{}{row[0]["user_id"], c.PostForm("account"), c.ClientIP()})
@@ -37,7 +89,7 @@ func Shop_Login(c *gin.Context) {
 }
 
 func Shop_Logout(c *gin.Context) {
-	shop_id := verify.Shop_Token_Verify(c)
+	shop_id := middleware.VerifyToken(c, "shop")
 	if shop_id == 0 {
 		utils.Failed(c, "Token Error")
 		return
@@ -52,7 +104,7 @@ func Shop_Logout(c *gin.Context) {
 }
 
 func Get_Shop_Detail(c *gin.Context) {
-	shop_id := verify.Shop_Token_Verify(c)
+	shop_id := middleware.VerifyToken(c, "shop")
 	if shop_id == 0 {
 		utils.Failed(c, "Token Error")
 		return
@@ -65,7 +117,7 @@ func Get_Shop_Detail(c *gin.Context) {
 }
 
 func Update_Shop_Detail(c *gin.Context) {
-	shop_id := verify.Shop_Token_Verify(c)
+	shop_id := middleware.VerifyToken(c, "shop")
 	if shop_id == 0 {
 		utils.Failed(c, "Token Error")
 		return
@@ -85,7 +137,7 @@ func Update_Shop_Detail(c *gin.Context) {
 }
 
 func Upload_Shop_Image(c *gin.Context) {
-	shop_id := verify.Shop_Token_Verify(c)
+	shop_id := middleware.VerifyToken(c, "shop")
 	if shop_id == 0 {
 		utils.Failed(c, "Token Error")
 		return
@@ -100,7 +152,7 @@ func Get_Shop_Image(c *gin.Context) {
 }
 
 func Insert_Shop_Car(c *gin.Context) {
-	shop_id := verify.Shop_Token_Verify(c)
+	shop_id := middleware.VerifyToken(c, "shop")
 	if shop_id == 0 {
 		utils.Failed(c, "Token Error")
 		return
@@ -119,7 +171,7 @@ func Insert_Shop_Car(c *gin.Context) {
 }
 
 func Update_Shop_Car(c *gin.Context) {
-	shop_id := verify.Shop_Token_Verify(c)
+	shop_id := middleware.VerifyToken(c, "shop")
 	if shop_id == 0 {
 		utils.Failed(c, "Token Error")
 		return
@@ -139,7 +191,7 @@ func Update_Shop_Car(c *gin.Context) {
 }
 
 func Delete_Shop_Car(c *gin.Context) {
-	shop_id := verify.Shop_Token_Verify(c)
+	shop_id := middleware.VerifyToken(c, "shop")
 	if shop_id == 0 {
 		utils.Failed(c, "Token Error")
 		return
@@ -156,7 +208,7 @@ func Delete_Shop_Car(c *gin.Context) {
 }
 
 func Get_Shop_Car(c *gin.Context) {
-	shop_id := verify.Shop_Token_Verify(c)
+	shop_id := middleware.VerifyToken(c, "shop")
 	if shop_id == 0 {
 		utils.Failed(c, "Token Error")
 		return
@@ -173,7 +225,7 @@ func Get_Shop_Car(c *gin.Context) {
 }
 
 func Get_Shop_Car_List(c *gin.Context) {
-	shop_id := verify.Shop_Token_Verify(c)
+	shop_id := middleware.VerifyToken(c, "shop")
 	if shop_id == 0 {
 		utils.Failed(c, "Token Error")
 		return

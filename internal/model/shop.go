@@ -21,6 +21,13 @@ func Select_Shop_Id(data []interface{}) []table.Shop {
 	return result
 }
 
+func Insert_Shop(data []interface{}) []table.Shop {
+	sql := `INSERT INTO shop (account, password) VALUES (?, ?);`
+	database.Insert(sql, data)
+	result := []table.Shop{}
+	return result
+}
+
 // 查詢shop detail
 func Get_Shop_Detail(data []interface{}) []table.Shop_detail {
 	sql := `SELECT shop_id, IFNULL(shop_name, ''), IFNULL(shop_info, ''), IFNULL(shop_image, ''),
