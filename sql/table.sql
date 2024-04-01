@@ -1,4 +1,16 @@
-DROP TABLE IF EXISTS `shop`;
+CREATE TABLE `admin` (
+  `admin_id` int NOT NULL AUTO_INCREMENT,
+  `account` varchar(255) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`admin_id`)
+);
+CREATE TABLE `admin_login_log` (
+  `log_id` int NOT NULL AUTO_INCREMENT COMMENT 'Primary Key',
+  `admin_id` int DEFAULT NULL,
+  `ip` varchar(255) DEFAULT NULL,
+  `log_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`log_id`)
+);
 CREATE TABLE `shop` (
   `shop_id` int NOT NULL AUTO_INCREMENT,
   `account` varchar(255) DEFAULT NULL,
@@ -7,8 +19,13 @@ CREATE TABLE `shop` (
   `status` int DEFAULT 0,
   PRIMARY KEY (`shop_id`)
 );
-
-DROP TABLE IF EXISTS `shop_detail`;
+CREATE TABLE `shop_login_log` (
+  `log_id` int NOT NULL AUTO_INCREMENT COMMENT 'Primary Key',
+  `shop_id` int DEFAULT NULL,
+  `ip` varchar(255) DEFAULT NULL,
+  `log_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`log_id`)
+);
 CREATE TABLE `shop_detail` (
   `shop_id` int NOT NULL AUTO_INCREMENT COMMENT 'Primary Key',
   `shop_name` varchar(50) DEFAULT NULL,
@@ -23,9 +40,7 @@ CREATE TABLE `shop_detail` (
   `shop_city` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   PRIMARY KEY (`shop_id`),
   CONSTRAINT `shop_detail_ibfk_1` FOREIGN KEY (`shop_id`) REFERENCES `shop` (`shop_id`)
-)
-
-DROP TABLE IF EXISTS `car`;
+);
 CREATE TABLE `car` (
   `car_id` int NOT NULL AUTO_INCREMENT COMMENT 'Primary Key',
   `shop_id` int NOT NULL,
@@ -38,5 +53,4 @@ CREATE TABLE `car` (
   `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `car_year` int DEFAULT NULL,
   PRIMARY KEY (`car_id`)
-)
-
+);

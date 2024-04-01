@@ -13,11 +13,11 @@ import (
 
 func connectWithConnector() (*sql.DB, error) {
 	var (
-		dbUser                 = "J"
-		dbPwd                  = "j75297529"
-		dbName                 = "LAA0989476oneshop"
-		instanceConnectionName = "oneshop-418410:asia-northeast1:oneshop"
-		usePrivate             = ""
+		User           = utils.Config("mysql.user")
+		Password       = utils.Config("mysql.password")
+		Name           = utils.Config("mysql.name")
+		ConnectionName = utils.Config("mysql.connectionName")
+		UsePrivate     = utils.Config("mysql.usePrivate")
 	)
 
 	d, err := cloudsqlconn.NewDialer(context.Background())
@@ -25,15 +25,15 @@ func connectWithConnector() (*sql.DB, error) {
 		return nil, fmt.Errorf("cloudsqlconn.NewDialer: %w", err)
 	}
 	var opts []cloudsqlconn.DialOption
-	if usePrivate != "" {
+	if UsePrivate != "" {
 		opts = append(opts, cloudsqlconn.WithPrivateIP())
 	}
 	mysql.RegisterDialContext("cloudsqlconn",
 		func(ctx context.Context, addr string) (net.Conn, error) {
-			return d.Dial(ctx, instanceConnectionName, opts...)
+			return d.Dial(ctx, ConnectionName, opts...)
 		})
 
-	dbURI := fmt.Sprintf("%s:%s@cloudsqlconn(localhost:3306)/%s?parseTime=true", dbUser, dbPwd, dbName)
+	dbURI := fmt.Sprintf("%s:%s@cloudsqlconn(localhost:3306)/%s?parseTime=true", User, Password, Name)
 
 	dbPool, err := sql.Open("mysql", dbURI)
 	if err != nil {
@@ -72,7 +72,7 @@ func Update(sqlstring string, data []interface{}) int {
 	res, err := stmt.Exec(data...)
 	utils.CheckErr(err)
 
-	id, err := res.LastInsertId()
+	id, err := res.RowsAffected()
 	utils.CheckErr(err)
 
 	defer DB.Close()
@@ -91,7 +91,7 @@ func Delete(sqlstring string, data []interface{}) int {
 	res, err := stmt.Exec(data...)
 	utils.CheckErr(err)
 
-	id, err := res.LastInsertId()
+	id, err := res.RowsAffected()
 	utils.CheckErr(err)
 
 	defer DB.Close()

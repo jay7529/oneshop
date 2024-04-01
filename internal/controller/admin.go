@@ -6,72 +6,61 @@ import (
 	"oneshop/middleware"
 	"oneshop/utils"
 
-	"time"
-
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 )
 
 func Admin_Login(c *gin.Context) {
 	if !verify.Admin_Login_Verify(c) {
-		utils.Failed(c, "Parameter Error")
+		utils.Error(c, "Parameter Error")
 		return
 	}
 
 	row := model.Select_Admin_Id([]interface{}{c.PostForm("account"), utils.MD5crypt(c.PostForm("password"))})
 
 	if len(row) < 1 {
-		utils.Failed(c, "ログインできません。アカウントのパスワードが正しいか確認してください。")
+		utils.Failed(c, "", "ログインできません。アカウントのパスワードが正しいか確認してください。")
 		return
 	}
+
+	model.Insert_Admin_LoginLog([]interface{}{row[0].AdminId, c.ClientIP()})
 
 	//取得token
 	token, _ := middleware.GenerateToken("admin", row[0].AdminId)
-
-	// model.Insert_login_log([]interface{}{row[0]["user_id"], c.PostForm("account"), c.ClientIP()})
-
-	utils.Success(c, map[string]interface{}{"token": token}, "Login Success")
+	utils.Success(c, token, nil, "Login Success")
 }
 
-func Get_Admin_Detail(c *gin.Context) {
+func Admin_Update_Shop_Status(c *gin.Context) {
 	admin_id := middleware.VerifyToken(c, "admin")
 	if admin_id == 0 {
-		utils.Failed(c, "Token Error")
+		utils.Error(c, "Token Error")
+		return
+	}
+	if !verify.Admin_Update_Shop_Status_Verify(c) {
+		utils.Error(c, "Parameter Error")
 		return
 	}
 
-	row := model.Select_Admin_Detail([]interface{}{admin_id})
+	id := model.Update_Shop_Status([]interface{}{c.PostForm("status"), c.PostForm("shop_id")})
+	if id == 0 {
+		newToken, _ := middleware.GenerateToken("admin", admin_id)
+		utils.Success(c, newToken, nil, "Update Success")
+		return
+	}
 
 	newToken, _ := middleware.GenerateToken("admin", admin_id)
-	utils.Success(c, map[string]interface{}{"token": newToken, "admin": row}, "Success")
+	utils.Success(c, newToken, nil, "Update Success")
 }
 
-func Update_Admin_Detail(c *gin.Context) {
+func Admin_Get_Shop_Apply_List(c *gin.Context) {
 	admin_id := middleware.VerifyToken(c, "admin")
 	if admin_id == 0 {
-		utils.Failed(c, "Token Error")
-		return
-	}
-	if !verify.Update_Admin_Detail_Verify(c) {
-		utils.Failed(c, "Parameter Error")
+		utils.Error(c, "Token Error")
 		return
 	}
 
-	model.Update_Admin_Detail([]interface{}{
-		c.PostForm("shopName"), c.PostForm("shopInfo"), c.PostForm("shopImage"),
-		c.PostForm("corporationName"), c.PostForm("shopLocation"), c.PostForm("openTime"),
-		c.PostForm("dayOff"), c.PostForm("phoneNumber"), c.PostForm("email"), admin_id})
+	row := model.Select_Shop_List([]interface{}{})
 
 	newToken, _ := middleware.GenerateToken("admin", admin_id)
-	utils.Success(c, map[string]interface{}{"token": newToken}, "Update Success")
-}
-
-func Upload_Admin_Image(c *gin.Context) {
-	admin_id := middleware.VerifyToken(c, "admin")
-	if admin_id == 0 {
-		utils.Failed(c, "Token Error")
-		return
-	}
-
-	utils.UploadImage(c, "admin/"+utils.IntToString(admin_id)+"/", utils.Int64ToString(time.Now().Unix()))
+	utils.Success(c, newToken, map[string]interface{}{"shop": row}, "Success")
 }

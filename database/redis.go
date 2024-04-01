@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -8,7 +9,7 @@ import (
 )
 
 var client = redis.NewClient(&redis.Options{
-	Addr: os.Getenv("REDISHOST") + ":" + os.Getenv("REDISPORT"),
+	Addr: fmt.Sprintf("%s:%s", os.Getenv("REDISHOST"), os.Getenv("REDISPORT")),
 	DB:   0,
 })
 

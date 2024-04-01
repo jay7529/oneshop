@@ -30,14 +30,14 @@ func User_Get_Shop_List(c *gin.Context) {
 
 	row := model.User_Get_Shop_List([]interface{}{})
 
-	utils.Success(c, map[string]interface{}{"shop": row}, "Success")
+	utils.Success(c, "", map[string]interface{}{"shop": row}, "Success")
 }
 
 func User_Get_Shop(c *gin.Context) {
 
 	row := model.User_Get_Shop([]interface{}{c.Param("shop_id")})
 
-	utils.Success(c, map[string]interface{}{"shop": row}, "Success")
+	utils.Success(c, "", map[string]interface{}{"shop": row}, "Success")
 }
 
 func User_Get_Shop_Image(c *gin.Context) {
@@ -49,5 +49,5 @@ func User_Get_Shop_Car_List(c *gin.Context) {
 
 	row := model.User_Get_Shop_Car_List([]interface{}{c.Param("shop_id")})
 
-	utils.Success(c, map[string]interface{}{"car": row}, "Success")
+	utils.Success(c, "", map[string]interface{}{"car": row}, "Success")
 }

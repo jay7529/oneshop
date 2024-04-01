@@ -5,7 +5,6 @@ import (
 	table "oneshop/internal/table"
 )
 
-// 用帳號查詢admin_id
 func Select_Admin_Id(data []interface{}) []table.Admin {
 	sql := `SELECT admin_id FROM admin WHERE account = ? AND password = ?`
 	rows := database.Query(sql, data)
@@ -21,33 +20,29 @@ func Select_Admin_Id(data []interface{}) []table.Admin {
 	return result
 }
 
-// 查詢admin detail
-func Select_Admin_Detail(data []interface{}) []table.Admin_detail {
-	sql := `SELECT shop_name, shop_info, shop_image, corporation_name,`
-	sql += ` shop_location, open_time, dayoff, phonenumber, email`
-	sql += ` FROM admin_detail WHERE admin_id = ?`
+func Insert_Admin_LoginLog(data []interface{}) int {
+	sql := `INSERT INTO admin_login_log (admin_id, ip) VALUES (?, ?);`
+	id := database.Insert(sql, data)
+	return id
+}
+
+func Update_Shop_Status(data []interface{}) int {
+	sql := `UPDATE shop SET status = ? WHERE shop_id = ?`
+	id := database.Update(sql, data)
+	return id
+}
+
+func Select_Shop_List(data []interface{}) []table.Shop {
+	sql := `SELECT shop_id, account, status FROM shop WHERE status = "1, 2, 3, 4"`
 	rows := database.Query(sql, data)
-	result := []table.Admin_detail{}
+	result := []table.Shop{}
 	for rows.Next() {
-		var row table.Admin_detail
-		err := rows.Scan(&row.ShopName, &row.ShopInfo, &row.ShopImage,
-			&row.CorporationName, &row.ShopLocation, &row.OpenTime,
-			&row.DayOff, &row.PhoneNumber, &row.Email)
+		var row table.Shop
+		err := rows.Scan(&row.ShopId, &row.Account, &row.Status)
 		if err != nil {
 			panic(err.Error())
 		}
 		result = append(result, row)
 	}
-	return result
-}
-
-// 更新admin detail
-func Update_Admin_Detail(data []interface{}) []table.Admin {
-	sql := `UPDATE admin_detail SET`
-	sql += ` shop_name = ?, shop_info = ?, shop_image = ?, corporation_name = ?,`
-	sql += ` shop_location = ?, open_time = ?, dayoff = ?, phonenumber = ?, email = ?`
-	sql += ` WHERE admin_id = ?`
-	database.Update(sql, data)
-	result := []table.Admin{}
 	return result
 }

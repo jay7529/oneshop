@@ -7,8 +7,8 @@ import (
 	"encoding/hex"
 )
 
-var commonIV = "1234567890123456"
-var key = "5Qt4xieK24O8aklj84k4mTahkjkljlVk"
+var commonIV = Config("crypt.commonIV")
+var key = Config("crypt.key")
 
 // 加密字串
 func Decrypt(text string) string {

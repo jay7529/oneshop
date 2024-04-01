@@ -1,40 +1,34 @@
 package utils
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-func Success(c *gin.Context, data interface{}, msg string) {
+func Success(c *gin.Context, token string, data interface{}, msg string) {
 	c.JSON(http.StatusOK,
 		gin.H{
-			"code": 200,
-			"data": data,
-			"msg":  msg,
+			"code":  200,
+			"token": token,
+			"data":  data,
+			"msg":   msg,
 		})
 }
 
-func Failed(c *gin.Context, msg string) {
+func Failed(c *gin.Context, token string, msg string) {
 	c.JSON(http.StatusOK,
 		gin.H{
-			"code": 100,
-			"msg":  msg,
+			"code":  100,
+			"token": token,
+			"msg":   msg,
 		})
 }
 
-func Error(c *gin.Context, err error) {
+func Error(c *gin.Context, msg string) {
 	c.JSON(http.StatusBadRequest,
 		gin.H{
 			"code": 400,
-			"err":  err,
+			"msg":  msg,
 		})
-}
-
-func CheckErr(err error) bool {
-	if err != nil {
-		fmt.Printf("%s\n", err.Error())
-	}
-	return true
 }

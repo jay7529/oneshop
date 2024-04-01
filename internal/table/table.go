@@ -23,6 +23,7 @@ type Shop struct {
 	ShopId   int
 	Account  string
 	Password string
+	Status   int
 }
 
 type Shop_detail struct {

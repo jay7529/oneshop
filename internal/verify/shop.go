@@ -36,12 +36,57 @@ func Shop_Code_Verify(c *gin.Context) bool {
 func Shop_Login_Verify(c *gin.Context) bool {
 	type Verify struct {
 		Account  string `validate:"required,max=100,min=1"`
-		Password string `validate:"required,max=15,min=1"`
+		Password string `validate:"required,max=20,min=6"`
 	}
 
 	verify := &Verify{
 		Account:  c.PostForm("account"),
 		Password: c.PostForm("password"),
+	}
+
+	err := validator.New().Struct(verify)
+	return err == nil
+}
+
+func Shop_Forget_Password_Verify(c *gin.Context) bool {
+	type Verify struct {
+		Email string `validate:"required,max=100,min=1"`
+	}
+
+	verify := &Verify{
+		Email: c.PostForm("email"),
+	}
+
+	err := validator.New().Struct(verify)
+	return err == nil
+}
+
+func Reset_Shop_Password_Verify(c *gin.Context) bool {
+	type Verify struct {
+		Email       string `validate:"required,max=100,min=1"`
+		OldPassword string `validate:"required,max=32,min=6"`
+		NewPassword string `validate:"required,necsfield=OldPassword,max=20,min=6"`
+	}
+
+	verify := &Verify{
+		Email:       c.PostForm("email"),
+		OldPassword: c.PostForm("oldPassword"),
+		NewPassword: c.PostForm("newPassword"),
+	}
+
+	err := validator.New().Struct(verify)
+	return err == nil
+}
+
+func Update_Shop_Password_Verify(c *gin.Context) bool {
+	type Verify struct {
+		OldPassword string `validate:"required,max=20,min=6"`
+		NewPassword string `validate:"required,necsfield=OldPassword,max=20,min=6"`
+	}
+
+	verify := &Verify{
+		OldPassword: c.PostForm("oldPassword"),
+		NewPassword: c.PostForm("newPassword"),
 	}
 
 	err := validator.New().Struct(verify)

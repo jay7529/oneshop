@@ -5,35 +5,31 @@ import (
 	table "oneshop/internal/table"
 )
 
-// // 用帳號查詢user_id
 // func Select_User_Id(data []interface{}) []map[string]interface{} {
 // 	row := db.Query("SELECT user_id FROM users WHERE account = ? AND password = ?", data)
 // 	return row
 // }
 
-// // 更新用戶密碼
 // func Update_User_Password(data []interface{}) int {
 // 	id := db.Update("UPDATE users SET password = ? where user_id = ?", data)
 // 	return id
 // }
 
-// // 新增用戶
 // func Insert_user(data []interface{}) int {
 // 	id := db.Insert("insert into user (account, password, last_login_ip, login_count) values (?, ?, ?, ?)", data)
 // 	return id
 // }
 
-// // 新增登入紀錄
 // func Insert_login_log(data []interface{}) int {
 // 	id := db.Insert("insert into login_log (user_id, account, ip) values (?, ?, ?)", data)
 // 	return id
 // }
 
-// 查詢shop list
 func User_Get_Shop_List(data []interface{}) []table.Shop_detail {
-	sql := `SELECT shop_id, IFNULL(shop_name, ''), IFNULL(shop_info, ''), IFNULL(shop_image, ''),
+	sql := `SELECT shop.shop_id, IFNULL(shop_name, ''), IFNULL(shop_info, ''), IFNULL(shop_image, ''),
 	 IFNULL(corporation_name, ''), IFNULL(shop_location, ''), IFNULL(shop_city, ''), IFNULL(open_time, ''), IFNULL(dayoff, ''),
-	 IFNULL(phonenumber, ''), IFNULL(email, '') FROM shop_detail`
+	 IFNULL(phonenumber, ''), IFNULL(email, '') FROM shop LEFT JOIN shop_detail 
+	 ON shop.shop_id = shop_detail.shop_id WHERE status = 1`
 	rows := database.Query(sql, data)
 	result := []table.Shop_detail{}
 	for rows.Next() {
@@ -49,11 +45,11 @@ func User_Get_Shop_List(data []interface{}) []table.Shop_detail {
 	return result
 }
 
-// 查詢shop detail
 func User_Get_Shop(data []interface{}) []table.Shop_detail {
-	sql := `SELECT shop_id, IFNULL(shop_name, ''), IFNULL(shop_info, ''), IFNULL(shop_image, ''),
+	sql := `SELECT shop.shop_id, IFNULL(shop_name, ''), IFNULL(shop_info, ''), IFNULL(shop_image, ''),
 	 IFNULL(corporation_name, ''), IFNULL(shop_location, ''), IFNULL(shop_city, ''), IFNULL(open_time, ''), IFNULL(dayoff, ''),
-	 IFNULL(phonenumber, ''), IFNULL(email, '') FROM shop_detail where shop_id = ?`
+	 IFNULL(phonenumber, ''), IFNULL(email, '') FROM shop LEFT JOIN shop_detail 
+	 ON shop.shop_id = shop_detail.shop_id WHERE shop.shop_id = ? AND status = 1`
 	rows := database.Query(sql, data)
 	result := []table.Shop_detail{}
 	for rows.Next() {
@@ -69,11 +65,10 @@ func User_Get_Shop(data []interface{}) []table.Shop_detail {
 	return result
 }
 
-// 查詢car list
 func User_Get_Shop_Car_List(data []interface{}) []table.Car {
 	sql := `SELECT car_id, IFNULL(car_name, ''), IFNULL(car_brand, ''), IFNULL(car_image, ''),
 	 IFNULL(car_price, ''), IFNULL(car_fee, ''), IFNULL(car_year, ''), IFNULL(shelves, '')
-	  FROM car WHERE shop_id = ?`
+	 FROM car WHERE shop_id = ? AND status = 1`
 	rows := database.Query(sql, data)
 	result := []table.Car{}
 	for rows.Next() {

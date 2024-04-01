@@ -64,7 +64,7 @@ func VerifyToken(c *gin.Context, identity string) int {
 		claim.ExpiresAt >= time.Now().Unix() &&
 		claim.Identity == identity &&
 		database.ExistsHkey(identity, utils.IntToString(claim.ID)) &&
-		c.GetHeader("token") == database.GetHkey("shop", utils.IntToString(claim.ID)) {
+		c.GetHeader("token") == database.GetHkey(identity, utils.IntToString(claim.ID)) {
 		return claim.ID
 	} else {
 		return 0
