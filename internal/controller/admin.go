@@ -52,7 +52,7 @@ func Admin_Update_Shop_Status(c *gin.Context) {
 	utils.Success(c, newToken, nil, "Update Success")
 }
 
-func Admin_Get_Shop_Apply_List(c *gin.Context) {
+func Admin_Get_Shop_List(c *gin.Context) {
 	admin_id := middleware.VerifyToken(c, "admin")
 	if admin_id == 0 {
 		utils.Error(c, "Token Error")

@@ -12,15 +12,15 @@ func RegisterRouter(app *gin.Engine) {
 	{
 		admin.POST("/login", controller.Admin_Login)
 
-		admin.GET("/shopApply", controller.Admin_Get_Shop_Apply_List)
+		admin.GET("/shop", controller.Admin_Get_Shop_List)
 		admin.PUT("/shopStatus", controller.Admin_Update_Shop_Status)
 		admin.GET("/detail", controller.Get_Shop_Detail)
 	}
 
 	shop := app.Group("/shop")
 	{
-		shop.POST("singup", controller.Shop_Singup)
-		shop.POST("singupCode", controller.Shop_Singup_Code)
+		shop.POST("signup", controller.Shop_Signup)
+		shop.POST("signupCode", controller.Shop_Signup_Code)
 
 		shop.POST("/login", controller.Shop_Login)
 		shop.DELETE("/logout", controller.Shop_Logout)
@@ -39,6 +39,11 @@ func RegisterRouter(app *gin.Engine) {
 		shop.GET("/car/:car_id", controller.Get_Shop_Car)
 		shop.PUT("/car/:car_id", controller.Update_Shop_Car)
 		shop.DELETE("/car/:car_id", controller.Delete_Shop_Car)
+
+		shop.GET("/staff", controller.Get_Shop_Staff_List)
+		shop.POST("/staff", controller.Insert_Shop_Staff)
+		shop.PUT("/staff/:staff_id", controller.Update_Shop_Staff)
+		shop.DELETE("/staff/:staff_id", controller.Delete_Shop_Staff)
 
 		shop.POST("/image", controller.Upload_Shop_Image)
 		shop.GET("/image/:shop_id/:imageId", controller.Get_Shop_Image)

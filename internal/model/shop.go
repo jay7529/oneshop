@@ -21,13 +21,13 @@ func Select_Shop_Id(data []interface{}) []table.Shop {
 }
 
 func Insert_Shop_LoginLog(data []interface{}) int {
-	sql := `INSERT INTO shop_login_log (shop_id, ip) VALUES (?, ?);`
+	sql := `INSERT INTO shop_login_log (shop_id, ip) VALUES (?, ?)`
 	id := database.Insert(sql, data)
 	return id
 }
 
 func Insert_Shop(data []interface{}) int {
-	sql := `INSERT INTO shop (account, password) VALUES (?, ?);`
+	sql := `INSERT INTO shop (account, password) VALUES (?, ?)`
 	id := database.Insert(sql, data)
 	return id
 }
@@ -92,7 +92,7 @@ func Update_Shop_Detail(data []interface{}) int {
 
 func Insert_Shop_Car(data []interface{}) int {
 	sql := `INSERT INTO car (shop_id, car_name, car_brand, car_image, car_price, car_fee, car_year)
-	 VALUES (?, ?, ?, ?, ?, ?, ?);`
+	 VALUES (?, ?, ?, ?, ?, ?, ?)`
 	id := database.Insert(sql, data)
 	return id
 }
@@ -105,7 +105,7 @@ func Update_Shop_Car(data []interface{}) int {
 }
 
 func Delete_Shop_Car(data []interface{}) int {
-	sql := `DELETE FROM car WHERE car_id = ? AND shop_id = ?;`
+	sql := `DELETE FROM car WHERE car_id = ? AND shop_id = ?`
 	id := database.Delete(sql, data)
 	return id
 }
@@ -138,6 +138,43 @@ func Get_Shop_Car_List(data []interface{}) []table.Car {
 		var row table.Car
 		err := rows.Scan(&row.CarId, &row.CarName, &row.CarBrand,
 			&row.CarImage, &row.CarPrice, &row.CarFee, &row.CarYear, &row.Shelves)
+		if err != nil {
+			panic(err.Error())
+		}
+		result = append(result, row)
+	}
+	return result
+}
+
+func Insert_Shop_Staff(data []interface{}) int {
+	sql := `INSERT INTO staff (shop_id, staff_name, staff_image, staff_position, staff_introduction)
+	 VALUES (?, ?, ?, ?, ?)`
+	id := database.Insert(sql, data)
+	return id
+}
+
+func Update_Shop_Staff(data []interface{}) int {
+	sql := `UPDATE staff SET staff_name = ?, staff_image = ?, staff_position = ?, staff_introduction = ?
+	 WHERE staff_id = ? AND shop_id = ?`
+	id := database.Update(sql, data)
+	return id
+}
+
+func Delete_Shop_Staff(data []interface{}) int {
+	sql := `DELETE FROM staff WHERE staff_id = ? AND shop_id = ?`
+	id := database.Delete(sql, data)
+	return id
+}
+
+func Get_Shop_Staff_List(data []interface{}) []table.Staff {
+	sql := `SELECT staff_id, IFNULL(staff_name, ''), IFNULL(staff_image, ''), IFNULL(staff_position, ''),
+	 IFNULL(staff_introduction, '') FROM staff WHERE shop_id = ?`
+	rows := database.Query(sql, data)
+	result := []table.Staff{}
+	for rows.Next() {
+		var row table.Staff
+		err := rows.Scan(&row.StaffId, &row.StaffName, &row.StaffImage,
+			&row.StaffPosition, &row.StaffIntroduction)
 		if err != nil {
 			panic(err.Error())
 		}

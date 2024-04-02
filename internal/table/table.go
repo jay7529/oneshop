@@ -51,3 +51,12 @@ type Car struct {
 	CarYear  int
 	Shelves  bool
 }
+
+type Staff struct {
+	StaffId           int
+	ShopId            int
+	StaffName         string
+	StaffImage        string
+	StaffPosition     string
+	StaffIntroduction string
+}

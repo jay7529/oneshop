@@ -54,3 +54,12 @@ CREATE TABLE `car` (
   `car_year` int DEFAULT NULL,
   PRIMARY KEY (`car_id`)
 );
+CREATE TABLE `staff` (
+  `staff_id` int NOT NULL AUTO_INCREMENT COMMENT 'Primary Key',
+  `shop_id` int NOT NULL,
+  `staff_name` varchar(255) DEFAULT NULL,
+  `staff_image` varchar(255) DEFAULT NULL,
+  `staff_position` varchar(255) DEFAULT NULL,
+  `staff_introduction` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`staff_id`)
+);

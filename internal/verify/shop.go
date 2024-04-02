@@ -5,7 +5,7 @@ import (
 	"github.com/go-playground/validator"
 )
 
-func Shop_Singup_Verify(c *gin.Context) bool {
+func Shop_Signup_Verify(c *gin.Context) bool {
 	type Verify struct {
 		Email string `validate:"required,email"`
 	}
@@ -194,6 +194,59 @@ func Get_Shop_Car_Verify(c *gin.Context) bool {
 
 	verify := &Verify{
 		CarId: c.Param("car_id"),
+	}
+
+	err := validator.New().Struct(verify)
+	return err == nil
+}
+
+func Insert_Shop_Staff_Verify(c *gin.Context) bool {
+	type Verify struct {
+		StaffName         string `validate:"required,max=50,min=1"`
+		StaffImage        string `validate:"required,max=50"`
+		StaffPosition     string `validate:"required,max=50"`
+		StaffIntroduction string `validate:"required,max=200"`
+	}
+
+	verify := &Verify{
+		StaffName:         c.PostForm("staffName"),
+		StaffImage:        c.PostForm("staffImage"),
+		StaffPosition:     c.PostForm("staffPosition"),
+		StaffIntroduction: c.PostForm("staffIntroduction"),
+	}
+
+	err := validator.New().Struct(verify)
+	return err == nil
+}
+
+func Update_Shop_Staff_Verify(c *gin.Context) bool {
+	type Verify struct {
+		StaffId           string `validate:"required"`
+		StaffName         string `validate:"required,max=50,min=1"`
+		StaffImage        string `validate:"required,max=50"`
+		StaffPosition     string `validate:"required,max=50"`
+		StaffIntroduction string `validate:"required,max=200"`
+	}
+
+	verify := &Verify{
+		StaffId:           c.Param("staff_id"),
+		StaffName:         c.PostForm("staffName"),
+		StaffImage:        c.PostForm("staffImage"),
+		StaffPosition:     c.PostForm("staffPosition"),
+		StaffIntroduction: c.PostForm("staffIntroduction"),
+	}
+
+	err := validator.New().Struct(verify)
+	return err == nil
+}
+
+func Delete_Shop_Staff_Verify(c *gin.Context) bool {
+	type Verify struct {
+		StaffId string `validate:"required"`
+	}
+
+	verify := &Verify{
+		StaffId: c.Param("staff_id"),
 	}
 
 	err := validator.New().Struct(verify)

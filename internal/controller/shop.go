@@ -12,11 +12,10 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	_ "github.com/go-sql-driver/mysql"
 )
 
-func Shop_Singup(c *gin.Context) {
-	if !verify.Shop_Singup_Verify(c) {
+func Shop_Signup(c *gin.Context) {
+	if !verify.Shop_Signup_Verify(c) {
 		utils.Error(c, "Parameter Error")
 		return
 	}
@@ -46,7 +45,7 @@ func Shop_Singup(c *gin.Context) {
 	utils.Success(c, "", nil, "Success")
 }
 
-func Shop_Singup_Code(c *gin.Context) {
+func Shop_Signup_Code(c *gin.Context) {
 	if !verify.Shop_Code_Verify(c) {
 		utils.Error(c, "Parameter Error")
 		return
@@ -66,7 +65,7 @@ func Shop_Singup_Code(c *gin.Context) {
 	}
 	//取得token
 	token, _ := middleware.GenerateToken("shop", id)
-	utils.Success(c, token, nil, "SingUp Success")
+	utils.Success(c, token, nil, "SignUp Success")
 }
 
 func Shop_Login(c *gin.Context) {
@@ -313,10 +312,23 @@ func Delete_Shop_Car(c *gin.Context) {
 	newToken, _ := middleware.GenerateToken("shop", shop_id)
 
 	if id == 0 {
-		utils.Failed(c, newToken, "Update Failed")
+		utils.Failed(c, newToken, "Delete Failed")
 		return
 	}
 	utils.Success(c, newToken, nil, "Delete Success")
+}
+
+func Get_Shop_Car_List(c *gin.Context) {
+	shop_id := middleware.VerifyToken(c, "shop")
+	if shop_id == 0 {
+		utils.Error(c, "Token Error")
+		return
+	}
+
+	row := model.Get_Shop_Car_List([]interface{}{shop_id})
+
+	newToken, _ := middleware.GenerateToken("shop", shop_id)
+	utils.Success(c, newToken, map[string]interface{}{"car": row}, "Success")
 }
 
 func Get_Shop_Car(c *gin.Context) {
@@ -336,15 +348,88 @@ func Get_Shop_Car(c *gin.Context) {
 	utils.Success(c, newToken, map[string]interface{}{"car": row}, "Success")
 }
 
-func Get_Shop_Car_List(c *gin.Context) {
+func Insert_Shop_Staff(c *gin.Context) {
+	shop_id := middleware.VerifyToken(c, "shop")
+	if shop_id == 0 {
+		utils.Error(c, "Token Error")
+		return
+	}
+	if !verify.Insert_Shop_Staff_Verify(c) {
+		utils.Error(c, "Parameter Error")
+		return
+	}
+
+	id := model.Insert_Shop_Staff([]interface{}{
+		shop_id, c.PostForm("staffName"), c.PostForm("staffImage"),
+		c.PostForm("staffPosition"), c.PostForm("staffIntroduction")})
+
+	newToken, _ := middleware.GenerateToken("shop", shop_id)
+
+	if id == 0 {
+		utils.Failed(c, newToken, "Insert Failed")
+		return
+	}
+
+	utils.Success(c, newToken, nil, "Insert Success")
+}
+
+func Update_Shop_Staff(c *gin.Context) {
+	shop_id := middleware.VerifyToken(c, "shop")
+	if shop_id == 0 {
+		utils.Error(c, "Token Error")
+		return
+	}
+	if !verify.Update_Shop_Staff_Verify(c) {
+		utils.Error(c, "Parameter Error")
+		return
+	}
+
+	id := model.Update_Shop_Staff([]interface{}{
+		c.PostForm("staffName"), c.PostForm("staffImage"),
+		c.PostForm("staffPosition"), c.PostForm("staffIntroduction"),
+		c.Param("staff_id"), shop_id})
+
+	newToken, _ := middleware.GenerateToken("shop", shop_id)
+
+	if id == 0 {
+		utils.Failed(c, newToken, "Update Failed")
+		return
+	}
+
+	utils.Success(c, newToken, nil, "Update Success")
+}
+
+func Delete_Shop_Staff(c *gin.Context) {
+	shop_id := middleware.VerifyToken(c, "shop")
+	if shop_id == 0 {
+		utils.Error(c, "Token Error")
+		return
+	}
+	if !verify.Delete_Shop_Staff_Verify(c) {
+		utils.Error(c, "Parameter Error")
+		return
+	}
+
+	id := model.Delete_Shop_Staff([]interface{}{c.Param("staff_id"), shop_id})
+
+	newToken, _ := middleware.GenerateToken("shop", shop_id)
+
+	if id == 0 {
+		utils.Failed(c, newToken, "Delete Failed")
+		return
+	}
+	utils.Success(c, newToken, nil, "Delete Success")
+}
+
+func Get_Shop_Staff_List(c *gin.Context) {
 	shop_id := middleware.VerifyToken(c, "shop")
 	if shop_id == 0 {
 		utils.Error(c, "Token Error")
 		return
 	}
 
-	row := model.Get_Shop_Car_List([]interface{}{shop_id})
+	row := model.Get_Shop_Staff_List([]interface{}{shop_id})
 
 	newToken, _ := middleware.GenerateToken("shop", shop_id)
-	utils.Success(c, newToken, map[string]interface{}{"car": row}, "Success")
+	utils.Success(c, newToken, map[string]interface{}{"staff": row}, "Success")
 }
