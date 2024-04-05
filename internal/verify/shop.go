@@ -33,6 +33,31 @@ func Shop_Code_Verify(c *gin.Context) bool {
 	return err == nil
 }
 
+func Shop_New_Signup_Verify(c *gin.Context) bool {
+	type Verify struct {
+		Email       string `validate:"required,email"`
+		Code        string `validate:"required,max=6,min=6"`
+		Password    string `validate:"required,max=32,min=6"`
+		ShopName    string `validate:"required,min=1"`
+		PostCode    string `validate:"required,min=6"`
+		Address     string `validate:"required,max=32,min=1"`
+		PhoneNumber string `validate:"required,min=6"`
+	}
+
+	verify := &Verify{
+		Email:       c.PostForm("email"),
+		Code:        c.PostForm("code"),
+		Password:    c.PostForm("password"),
+		ShopName:    c.PostForm("shopName"),
+		PostCode:    c.PostForm("postCode"),
+		Address:     c.PostForm("address"),
+		PhoneNumber: c.PostForm("phoneNumber"),
+	}
+
+	err := validator.New().Struct(verify)
+	return err == nil
+}
+
 func Shop_Login_Verify(c *gin.Context) bool {
 	type Verify struct {
 		Account  string `validate:"required,max=100,min=1"`
@@ -65,7 +90,7 @@ func Reset_Shop_Password_Verify(c *gin.Context) bool {
 	type Verify struct {
 		Email       string `validate:"required,max=100,min=1"`
 		OldPassword string `validate:"required,max=32,min=6"`
-		NewPassword string `validate:"required,necsfield=OldPassword,max=20,min=6"`
+		NewPassword string `validate:"required,necsfield=OldPassword,max=32,min=6"`
 	}
 
 	verify := &Verify{
@@ -80,8 +105,8 @@ func Reset_Shop_Password_Verify(c *gin.Context) bool {
 
 func Update_Shop_Password_Verify(c *gin.Context) bool {
 	type Verify struct {
-		OldPassword string `validate:"required,max=20,min=6"`
-		NewPassword string `validate:"required,necsfield=OldPassword,max=20,min=6"`
+		OldPassword string `validate:"required,max=32,min=6"`
+		NewPassword string `validate:"required,necsfield=OldPassword,max=32,min=6"`
 	}
 
 	verify := &Verify{
@@ -99,6 +124,7 @@ func Update_Shop_Detail_Verify(c *gin.Context) bool {
 		ShopInfo        string `validate:"required,max=100"`
 		ShopImage       string `validate:"required,max=100"`
 		CorporationName string `validate:"required,max=100"`
+		PostCode        string `validate:"required,min=6"`
 		ShopLocation    string `validate:"required,max=100"`
 		ShopCity        string `validate:"required,max=20"`
 		OpenTime        string `validate:"required,max=100"`
@@ -112,6 +138,7 @@ func Update_Shop_Detail_Verify(c *gin.Context) bool {
 		ShopInfo:        c.PostForm("shopInfo"),
 		ShopImage:       c.PostForm("shopImage"),
 		CorporationName: c.PostForm("corporationName"),
+		PostCode:        c.PostForm("postCode"),
 		ShopLocation:    c.PostForm("shopLocation"),
 		ShopCity:        c.PostForm("shopCity"),
 		OpenTime:        c.PostForm("openTime"),

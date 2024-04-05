@@ -13,11 +13,12 @@ CREATE TABLE `admin_login_log` (
 );
 CREATE TABLE `shop` (
   `shop_id` int NOT NULL AUTO_INCREMENT,
-  `account` varchar(255) DEFAULT NULL,
+  `account` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `status` int DEFAULT 0,
-  PRIMARY KEY (`shop_id`)
+  `status` int DEFAULT '0',
+  PRIMARY KEY (`shop_id`),
+  UNIQUE KEY `account` (`account`)
 );
 CREATE TABLE `shop_login_log` (
   `log_id` int NOT NULL AUTO_INCREMENT COMMENT 'Primary Key',
@@ -32,6 +33,7 @@ CREATE TABLE `shop_detail` (
   `shop_info` varchar(50) DEFAULT NULL,
   `shop_image` varchar(250) DEFAULT NULL,
   `corporation_name` varchar(50) DEFAULT NULL,
+  `post_code` varchar(255) DEFAULT NULL,
   `shop_location` varchar(100) DEFAULT NULL,
   `open_time` varchar(50) DEFAULT NULL,
   `dayoff` varchar(50) DEFAULT NULL,

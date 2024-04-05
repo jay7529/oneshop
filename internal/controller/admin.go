@@ -59,7 +59,7 @@ func Admin_Get_Shop_List(c *gin.Context) {
 		return
 	}
 
-	row := model.Select_Shop_List([]interface{}{})
+	row := model.Select_Shop_List([]interface{}{c.Param("shop_id")})
 
 	newToken, _ := middleware.GenerateToken("admin", admin_id)
 	utils.Success(c, newToken, map[string]interface{}{"shop": row}, "Success")

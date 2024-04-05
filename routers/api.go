@@ -14,13 +14,14 @@ func RegisterRouter(app *gin.Engine) {
 
 		admin.GET("/shop", controller.Admin_Get_Shop_List)
 		admin.PUT("/shopStatus", controller.Admin_Update_Shop_Status)
-		admin.GET("/detail", controller.Get_Shop_Detail)
+		admin.GET("/shopDetail", controller.Get_Shop_Detail)
 	}
 
 	shop := app.Group("/shop")
 	{
 		shop.POST("signup", controller.Shop_Signup)
 		shop.POST("signupCode", controller.Shop_Signup_Code)
+		shop.POST("newSignup", controller.Shop_New_Signup)
 
 		shop.POST("/login", controller.Shop_Login)
 		shop.DELETE("/logout", controller.Shop_Logout)

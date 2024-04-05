@@ -27,7 +27,8 @@ import (
 
 func User_Get_Shop_List(data []interface{}) []table.Shop_detail {
 	sql := `SELECT shop.shop_id, IFNULL(shop_name, ''), IFNULL(shop_info, ''), IFNULL(shop_image, ''),
-	 IFNULL(corporation_name, ''), IFNULL(shop_location, ''), IFNULL(shop_city, ''), IFNULL(open_time, ''), IFNULL(dayoff, ''),
+	 IFNULL(corporation_name, ''), IFNULL(post_code, ''), IFNULL(shop_location, ''), 
+	 IFNULL(shop_city, ''), IFNULL(open_time, ''), IFNULL(dayoff, ''),
 	 IFNULL(phonenumber, ''), IFNULL(email, '') FROM shop LEFT JOIN shop_detail 
 	 ON shop.shop_id = shop_detail.shop_id WHERE status = 1`
 	rows := database.Query(sql, data)
@@ -35,7 +36,7 @@ func User_Get_Shop_List(data []interface{}) []table.Shop_detail {
 	for rows.Next() {
 		var row table.Shop_detail
 		err := rows.Scan(&row.ShopId, &row.ShopName, &row.ShopInfo, &row.ShopImage,
-			&row.CorporationName, &row.ShopLocation, &row.ShopCity, &row.OpenTime,
+			&row.CorporationName, &row.PostCode, &row.ShopLocation, &row.ShopCity, &row.OpenTime,
 			&row.DayOff, &row.PhoneNumber, &row.Email)
 		if err != nil {
 			panic(err.Error())
@@ -47,7 +48,8 @@ func User_Get_Shop_List(data []interface{}) []table.Shop_detail {
 
 func User_Get_Shop(data []interface{}) []table.Shop_detail {
 	sql := `SELECT shop.shop_id, IFNULL(shop_name, ''), IFNULL(shop_info, ''), IFNULL(shop_image, ''),
-	 IFNULL(corporation_name, ''), IFNULL(shop_location, ''), IFNULL(shop_city, ''), IFNULL(open_time, ''), IFNULL(dayoff, ''),
+	 IFNULL(corporation_name, ''), IFNULL(post_code, ''), IFNULL(shop_location, ''), 
+	 IFNULL(shop_city, ''), IFNULL(open_time, ''), IFNULL(dayoff, ''),
 	 IFNULL(phonenumber, ''), IFNULL(email, '') FROM shop LEFT JOIN shop_detail 
 	 ON shop.shop_id = shop_detail.shop_id WHERE shop.shop_id = ? AND status = 1`
 	rows := database.Query(sql, data)
@@ -55,7 +57,7 @@ func User_Get_Shop(data []interface{}) []table.Shop_detail {
 	for rows.Next() {
 		var row table.Shop_detail
 		err := rows.Scan(&row.ShopId, &row.ShopName, &row.ShopInfo, &row.ShopImage,
-			&row.CorporationName, &row.ShopLocation, &row.ShopCity, &row.OpenTime,
+			&row.CorporationName, &row.PostCode, &row.ShopLocation, &row.ShopCity, &row.OpenTime,
 			&row.DayOff, &row.PhoneNumber, &row.Email)
 		if err != nil {
 			panic(err.Error())

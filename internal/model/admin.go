@@ -33,7 +33,7 @@ func Update_Shop_Status(data []interface{}) int {
 }
 
 func Select_Shop_List(data []interface{}) []table.Shop {
-	sql := `SELECT shop_id, account, status FROM shop WHERE status = "1, 2, 3, 4"`
+	sql := `SELECT shop_id, account, status FROM shop`
 	rows := database.Query(sql, data)
 	result := []table.Shop{}
 	for rows.Next() {

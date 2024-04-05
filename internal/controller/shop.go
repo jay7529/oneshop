@@ -55,14 +55,34 @@ func Shop_Signup_Code(c *gin.Context) {
 		return
 	}
 
+	utils.Success(c, "", nil, "SignUp Success")
+}
+
+func Shop_New_Signup(c *gin.Context) {
+	if !verify.Shop_New_Signup_Verify(c) {
+		utils.Error(c, "Parameter Error")
+		return
+	}
+	if !database.Existskey(c.PostForm("email")) || c.PostForm("code") != database.Getkey(c.PostForm("email")) {
+		utils.Failed(c, "", "認証コードが正しくないか、有効期限が切れています。")
+		return
+	}
+
 	database.Delkey(c.PostForm("email"))
 
 	id := model.Insert_Shop([]interface{}{
-		c.PostForm("email"), utils.MD5crypt(c.PostForm("code"))})
+		c.PostForm("email"), utils.MD5crypt(c.PostForm("password")), c.PostForm("email")})
+	if id == 0 {
+		utils.Failed(c, "", "SinUp Failed, Account Exists")
+		return
+	}
+	id = model.Update_Shop_Detail_FirstTime([]interface{}{
+		c.PostForm("postCode"), c.PostForm("address"), c.PostForm("phoneNumber"), c.PostForm("shopName"), c.PostForm("email"), id})
 	if id == 0 {
 		utils.Failed(c, "", "SinUp Failed")
 		return
 	}
+
 	//取得token
 	token, _ := middleware.GenerateToken("shop", id)
 	utils.Success(c, token, nil, "SignUp Success")
@@ -218,7 +238,7 @@ func Update_Shop_Detail(c *gin.Context) {
 
 	id := model.Update_Shop_Detail([]interface{}{
 		c.PostForm("shopName"), c.PostForm("shopInfo"), c.PostForm("shopImage"),
-		c.PostForm("corporationName"), c.PostForm("shopLocation"), c.PostForm("shopCity"),
+		c.PostForm("corporationName"), c.PostForm("postCode"), c.PostForm("shopLocation"), c.PostForm("shopCity"),
 		c.PostForm("openTime"), c.PostForm("dayOff"), c.PostForm("phoneNumber"), c.PostForm("email"), shop_id})
 
 	newToken, _ := middleware.GenerateToken("shop", shop_id)
@@ -237,7 +257,7 @@ func Upload_Shop_Image(c *gin.Context) {
 		return
 	}
 
-	utils.UploadImage(c, "shop/"+utils.IntToString(shop_id)+"/", utils.Int64ToString(time.Now().Unix()))
+	utils.UploadImage(c, "shop/", utils.IntToString(shop_id)+"/", utils.Int64ToString(time.Now().Unix()))
 }
 
 func Get_Shop_Image(c *gin.Context) {

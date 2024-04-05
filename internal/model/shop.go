@@ -27,8 +27,16 @@ func Insert_Shop_LoginLog(data []interface{}) int {
 }
 
 func Insert_Shop(data []interface{}) int {
-	sql := `INSERT INTO shop (account, password) VALUES (?, ?)`
+	sql := `INSERT INTO shop (account, password) 
+	SELECT ?, ? WHERE NOT EXISTS (SELECT account FROM shop WHERE account = ?)`
 	id := database.Insert(sql, data)
+	return id
+}
+
+func Update_Shop_Detail_FirstTime(data []interface{}) int {
+	sql := `UPDATE shop_detail SET shop_name = ?, post_code = ?, shop_location = ?,
+	phonenumber = ?, email = ? WHERE shop_id = ?`
+	id := database.Update(sql, data)
 	return id
 }
 
@@ -61,14 +69,14 @@ func Update_Shop_Password(data []interface{}) int {
 
 func Get_Shop_Detail(data []interface{}) []table.Shop_detail {
 	sql := `SELECT shop_id, IFNULL(shop_name, ''), IFNULL(shop_info, ''), IFNULL(shop_image, ''),
-	 IFNULL(corporation_name, ''), IFNULL(shop_location, ''), IFNULL(shop_city, ''), IFNULL(open_time, ''), IFNULL(dayoff, ''),
+	 IFNULL(corporation_name, ''), IFNULL(post_code, ''), IFNULL(shop_location, ''), IFNULL(shop_city, ''), IFNULL(open_time, ''), IFNULL(dayoff, ''),
 	 IFNULL(phonenumber, ''), IFNULL(email, '') FROM shop_detail WHERE shop_id = ?`
 	rows := database.Query(sql, data)
 	result := []table.Shop_detail{}
 	for rows.Next() {
 		var row table.Shop_detail
 		err := rows.Scan(&row.ShopId, &row.ShopName, &row.ShopInfo, &row.ShopImage,
-			&row.CorporationName, &row.ShopLocation, &row.ShopCity, &row.OpenTime,
+			&row.CorporationName, &row.PostCode, &row.ShopLocation, &row.ShopCity, &row.OpenTime,
 			&row.DayOff, &row.PhoneNumber, &row.Email)
 		if err != nil {
 			panic(err.Error())
@@ -80,7 +88,8 @@ func Get_Shop_Detail(data []interface{}) []table.Shop_detail {
 
 func Update_Shop_Detail(data []interface{}) int {
 	sql := `UPDATE shop_detail SET shop_name = ?, shop_info = ?, shop_image = ?, corporation_name = ?,
-	 shop_location = ?, shop_city = ?, open_time = ?, dayoff = ?, phonenumber = ?, email = ? WHERE shop_id = ?`
+	 post_code = ?, shop_location = ?, shop_city = ?, open_time = ?, 
+	 dayoff = ?, phonenumber = ?, email = ? WHERE shop_id = ?`
 	id := database.Update(sql, data)
 	if id > 0 {
 		sql = `UPDATE shop SET status = 3 WHERE shop_id = ?`

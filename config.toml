@@ -1,0 +1,18 @@
+[mysql]
+ user = "J"
+ password = "j75297529"
+ name = "LAA0989476oneshop"
+ connectionName = "oneshop-418410:asia-northeast1:oneshop"
+ usePrivate = ""
+
+[redis]
+ host = "localhost"
+ port = 6379
+
+[crypt]
+ commonIV = "1234567890123456"
+ key = "5Qt4xieK24O8aklj84k4mTahkjkljlVk"
+
+[email]
+ account = "office7326068@gmail.com"
+ password = "ycdz cctp roaf zpdv"

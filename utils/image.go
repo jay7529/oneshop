@@ -8,10 +8,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func UploadImage(c *gin.Context, dirname string, filename string) {
+func UploadImage(c *gin.Context, identity string, id string, filename string) {
 
 	//建立路徑
-	os.MkdirAll("uploads/"+dirname, os.ModePerm)
+	os.MkdirAll("uploads/"+identity+id, os.ModePerm)
 
 	file, err := c.FormFile("image")
 	if err != nil {
@@ -20,13 +20,13 @@ func UploadImage(c *gin.Context, dirname string, filename string) {
 		return
 	}
 
-	path := "uploads/" + dirname + filename + filepath.Ext(file.Filename)
+	path := "uploads/" + identity + id + filename + filepath.Ext(file.Filename)
 	if err := c.SaveUploadedFile(file, path); err != nil {
 		Error(c, err.Error())
 		return
 	}
 
-	Success(c, "", map[string]interface{}{"filepath": filename + filepath.Ext(file.Filename)}, "Upload Success")
+	Success(c, "", map[string]interface{}{"filepath": id + filename + filepath.Ext(file.Filename)}, "Upload Success")
 }
 
 func HandlerImage(c *gin.Context, path string) {
