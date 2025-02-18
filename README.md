@@ -1,2 +1,2 @@
-// 執行專案
+// run
 $ go run main.go
